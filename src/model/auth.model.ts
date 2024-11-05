@@ -1,6 +1,14 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
+import jwt from "jsonwebtoken";
 
-const userSchema = new Schema(
+interface IUser extends Document {
+  username: string;
+  password: string;
+  email: string;
+  generateAuthToken: () => string;
+}
+
+const userSchema = new Schema<IUser>(
   {
     username: { type: String, required: true },
     password: { type: String, required: true },
@@ -9,6 +17,13 @@ const userSchema = new Schema(
   { collection: "auth" }
 );
 
-const User = mongoose.model("User", userSchema);
+userSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ _id: this._id, username: this.username }, process.env.JWT_SECRET || 'defaultSecret', {
+    expiresIn: '1h',
+  });
+  return token;
+};
+
+const User = mongoose.model<IUser>("User", userSchema);
 
 export default User;

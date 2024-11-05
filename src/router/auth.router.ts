@@ -54,6 +54,7 @@ const loginHandler: RequestHandler = async (req: Request, res: Response): Promis
     }
 
     let isMatch = await bcrypt.compare(password, existingUser.password);
+    const token = existingUser.generateAuthToken();
 
     if(isMatch) {
       res.status(201).json({ 
@@ -63,7 +64,8 @@ const loginHandler: RequestHandler = async (req: Request, res: Response): Promis
           user: {
             id: existingUser.username,
             email: existingUser.email
-          }
+          },
+          token: token
         }
       });
     }
