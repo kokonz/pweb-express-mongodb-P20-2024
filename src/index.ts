@@ -1,21 +1,22 @@
+import { connectToDatabase } from "./db-connection";
 import express from "express";
-import router from "./router";
-import connectDB from "./db/conn";
-import authMiddleware from "./middleware/auth.middleware";
-
+import { authRouter } from "./routes/auth.router";
+import { Verification } from "./middleware/auth";
 const app = express();
-const port = process.env.PORT || 4000;
 
-connectDB();
+app.use(express.json());
 
+// check endpoint
 app.get("/", (_, response) => {
-  response.status(200).send("Server is up");
+  response.status(200).send("Server is up and running 💫");
 });
 
-app.use(authMiddleware);
 
-app.use(router);
+app.use("/auth", authRouter);
 
-app.listen(port, () => {
-  console.log(`Express is running on Port ${port}`);
+const PORT = 4000;
+app.listen(PORT, () => {
+  console.log(`Express is running on Port ${PORT}`);
 });
+
+connectToDatabase();
