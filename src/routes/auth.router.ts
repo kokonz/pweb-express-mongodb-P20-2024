@@ -1,9 +1,8 @@
-import { Router } from 'express';
-import { createNewLibraryAccount, authenticateLibraryUser } from '../controllers/auth.controller';
+import { Router } from "express";
 
-const libraryAuthRouter = Router();
+export const authRouter = Router();
 
-libraryAuthRouter.post('/register', createNewLibraryAccount);
-libraryAuthRouter.post('/login', authenticateLibraryUser);
+import { Register, Login } from "../controllers/auth.controller";
 
-export default libraryAuthRouter;
+authRouter.post("/register", Register);
+authRouter.post("/login", Login);

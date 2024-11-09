@@ -1,13 +1,8 @@
-import express from "express";
+import { Router } from "express";
 
-const router = express.Router();
+export const mechanismRouter = Router();
 
-router.get("/borrow", (_, res) => {
-  res.status(200).send("Borrow placeholder");
-});
+import { borrowBook, returnBook } from "../controllers/mechanism.controller";
 
-router.get("/return", (_, res) => {
-  res.status(200).send("Return placeholder");
-});
-
-export default router;
+mechanismRouter.post("/borrow/:id", borrowBook);
+mechanismRouter.post("/return/:id", returnBook);

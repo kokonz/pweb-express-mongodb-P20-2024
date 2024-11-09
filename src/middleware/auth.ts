@@ -1,61 +1,48 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { LibraryUser } from '../models/user.model';
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import { User } from "../models/user.model";
 
-interface ITokenPayload {
-    userId: string;
-    username: string;
-}
+dotenv.config();
 
-export const validateUserSession = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const authToken = req.headers.authorization?.split(' ')[1];
+export async function Verification(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const authHeader = req.headers.authorization;
 
-        if (!authToken) {
-            return res.status(401).json({
-                status: 'failed',
-                message: 'Authentication token missing',
-                data: {}
-            });
-        }
-
-        const secretKey = process.env.SECRET_KEY;
-        if (!secretKey) {
-            throw new Error('JWT secret key not configured');
-        }
-
-        const decodedToken = jwt.verify(authToken, secretKey) as ITokenPayload;
-
-        const activeUser = await LibraryUser.findOne({
-            _id: decodedToken.userId,
-            'activeSessions.tokenString': authToken
-        });
-
-        if (!activeUser) {
-            return res.status(401).json({
-                status: 'failed',
-                message: 'Invalid or expired session',
-                data: {}
-            });
-        }
-
-        (req as any).currentUser = activeUser;
-        (req as any).currentToken = authToken;
-
-        next();
-    } catch (error) {
-        if (error instanceof jwt.JsonWebTokenError) {
-            return res.status(401).json({
-                status: 'failed',
-                message: 'Invalid authentication token',
-                data: {}
-            });
-        }
-
-        return res.status(500).json({
-            status: 'error',
-            message: 'Authentication system error',
-            data: {}
-        });
+    if (!authHeader) {
+      throw new Error("Authorization header is required");
     }
-};
+
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+      throw new Error("Invalid token format");
+    }
+
+    const secretKey = process.env.SECRET_KEY;
+    if (!secretKey) {
+      throw new Error("SECRET_KEY is not defined");
+    }
+
+    const decoded = jwt.verify(token, secretKey) as jwt.JwtPayload;
+    const user = await User.findOne({
+      _id: decoded._id,
+      "tokens.token": token,
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    next();
+  } catch (error) {
+    res.status(401).send({
+      status: "failed",
+      message: error,
+      data: {},
+    });
+  }
+}
