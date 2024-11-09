@@ -1,38 +1,42 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface Rating {
+interface BookRating {
   average: number;
-  count: number;
+  total: number;
 }
 
-export interface BookDocument extends Document {
+export interface IBook extends Document {
   title: string;
   author: string;
-  publishedDate: string;
+  publishedYear: string;
   publisher: string;
-  description: string;
-  coverImage: string;
-  rating: Rating;
-  tags: string[];
-  initialQty: number;
-  qty: number;
+  summary: string;
+  coverUrl: string;
+  rating: BookRating;
+  categories: string[];
+  stock: {
+    initial: number;
+    available: number;
+  };
 }
 
 const BookSchema: Schema = new Schema({
   title: { type: String, required: true },
   author: { type: String, required: true },
-  publishedDate: { type: String },
+  publishedYear: { type: String },
   publisher: { type: String },
-  description: { type: String },
-  coverImage: { type: String },
+  summary: { type: String },
+  coverUrl: { type: String },
   rating: {
-    average: { type: Number },
-    count: { type: Number },
+    average: { type: Number, default: 0 },
+    total: { type: Number, default: 0 },
   },
-  tags: { type: [String] },
-  initialQty: { type: Number, default: 1 },
-  qty: { type: Number, default: 1 },
+  categories: { type: [String], default: [] },
+  stock: {
+    initial: { type: Number, default: 1 },
+    available: { type: Number, default: 1 },
+  },
 });
 
-const Book = mongoose.model<BookDocument>("Book", BookSchema);
+const Book = mongoose.model<IBook>("Book", BookSchema);
 export default Book;
