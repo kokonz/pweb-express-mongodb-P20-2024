@@ -1,9 +1,9 @@
 import express from "express";
 
-const router = express.Router();
+const bookRoutes = express.Router();
 
-router.get("/", (_, res) => {
-  res.status(200).send("Book placeholder");
+bookRoutes.get("/", (_, res) => {
+  res.status(200).json({ message: "Book placeholder" });
 });
 
-export default router;
+export default bookRoutes;
