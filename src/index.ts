@@ -1,18 +1,23 @@
 import { connectToDatabase } from "./db-connection";
 import express from "express";
 import { authRouter } from "./routes/auth.router";
+import { bookRouter } from "./routes/book.router";
 import { Verification } from "./middleware/auth";
 const app = express();
 
 app.use(express.json());
 
-// check endpoint
 app.get("/", (_, response) => {
-  response.status(200).send("Server is up and running 💫");
+  const currentDate = new Date().toDateString();
+  response.status(200).json({
+    status: "success",
+    message: "pemweb gacor",
+    date: currentDate,
+  });
 });
 
-
 app.use("/auth", authRouter);
+app.use("/book", bookRouter);
 
 const PORT = 4000;
 app.listen(PORT, () => {

@@ -1,32 +1,53 @@
-import { Router } from "express";
-import {
-  addNewBook,
-  fetchAllBooks,
-  fetchBookById,
-  modifyBook,
-  removeBook,
-  lendBook,
-} from "../controllers/book.controller";
-import { verifyToken } from "../middleware/auth";
+import mongoose from "mongoose";
 
-const bookRouter = Router();
+const BookSchema = new mongoose.Schema(
+  {
+    rating: {
+      average: {
+        type: Number,
+        default: 0,
+      },
+      count: {
+        type: Number,
+        default: 0,
+      },
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    author: {
+      type: String,
+      required: true,
+    },
+    publishedDate: {
+      type: Date,
+      required: true,
+    },
+    publisher: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    coverImage: {
+      type: String,
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
+    initialQty: {
+      type: Number,
+      required: true,
+    },
+    qty: {
+      type: Number,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
-// Endpoint untuk menambahkan buku baru
-bookRouter.post("/", verifyToken, addNewBook);
-
-// Endpoint untuk mengambil semua buku
-bookRouter.get("/", verifyToken, fetchAllBooks);
-
-// Endpoint untuk mendapatkan rincian buku berdasarkan ID
-bookRouter.get("/:id", verifyToken, fetchBookById);
-
-// Endpoint untuk memperbarui informasi buku berdasarkan ID
-bookRouter.patch("/:id", verifyToken, modifyBook);
-
-// Endpoint untuk menghapus buku berdasarkan ID
-bookRouter.delete("/:id", verifyToken, removeBook);
-
-// Endpoint untuk meminjam buku berdasarkan ID
-bookRouter.post("/lend/:id", verifyToken, lendBook);
-
-export default bookRouter;
+export const Book = mongoose.model("Books", BookSchema);

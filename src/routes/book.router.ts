@@ -1,9 +1,11 @@
-import express from "express";
+import { Router } from "express";
 
-const bookRoutes = express.Router();
+export const bookRouter = Router();
 
-bookRoutes.get("/", (_, res) => {
-  res.status(200).json({ message: "Book placeholder" });
-});
+import { addBook, getAllBooks, getBookByID, deleteBookByID, updateBookByID } from "../controllers/book.controller";
 
-export default bookRoutes;
+bookRouter.post("/", addBook);
+bookRouter.get("/",  getAllBooks);
+bookRouter.get("/:id",  getBookByID);
+bookRouter.delete("/:id", deleteBookByID);
+bookRouter.patch("/:id", updateBookByID);

@@ -9,18 +9,17 @@ export const Register = async (req: Request, res: Response) => {
     const user = req.body;
     var { username, email, password } = user;
 
-    const isEmailAlreadyExist = await User.findOne({
-      email: email,
+    const isUsernameAlreadyExist = await User.findOne({
+      username: username,
     });
-    if (isEmailAlreadyExist) {
+    if (isUsernameAlreadyExist) {
       res.status(400).json({
-        status: 400,
-        message: "Email already in use",
+        status: "error",
+        message: "User already registered",
       });
       return;
     }
 
-    // Await the hashed password
     password = await HashPassword(password);
 
     const newUser = await User.create({
@@ -28,16 +27,20 @@ export const Register = async (req: Request, res: Response) => {
       email,
       password,
     });
-    res.status(201).json({
-      status: 201,
-      success: true,
-      message: "User created successfully",
-      user: newUser,
+
+    res.status(201).json({ 
+      status: "success",
+      message: "User registered successfully",
+      data: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email
+      }
     });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({
-      status: 400,
+      status: "error",
       message: error.message.toString(),
     });
   }
@@ -53,9 +56,8 @@ export const Login = async (req: Request, res: Response) => {
     });
     if (!isUserAlreadyExist) {
       res.status(400).json({
-        // 400 Code means Bad Request
-        status: 400,
-        message: "User has not Registered yet",
+        status: "error",
+        message: "User not registered",
       });
       return;
     }
@@ -66,9 +68,8 @@ export const Login = async (req: Request, res: Response) => {
     );
     if (!isPasswordMatched) {
       res.status(400).json({
-        // 400 Code means Bad Request
-        status: 400,
-        message: "Wrong Password",
+        status: "error",
+        message: "Invalid credentials",
       });
       return;
     }
@@ -83,17 +84,21 @@ export const Login = async (req: Request, res: Response) => {
     isUserAlreadyExist.tokens.push({ token });
     await isUserAlreadyExist.save();
 
-    // send the response
     res.status(200).json({
-      status: 200,
-      success: true,
-      message: "login success",
-      token: token,
+      status: "success",
+      message: "Login success",
+      data: {
+        user: {
+          username: isUserAlreadyExist.username,
+          email: isUserAlreadyExist.email
+        },
+        token: token
+      }
     });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({
-      status: 400,
+      status: "error",
       message: error.message.toString(),
     });
   }
