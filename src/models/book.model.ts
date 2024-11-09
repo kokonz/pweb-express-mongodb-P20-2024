@@ -1,32 +1,32 @@
 import { Router } from "express";
 import {
-  createBook,
-  getBooks,
-  getBookById,
-  updateBook,
-  deleteBook,
-  borrowBook,
+  addNewBook,
+  fetchAllBooks,
+  fetchBookById,
+  modifyBook,
+  removeBook,
+  lendBook,
 } from "../controllers/book.controller";
-import { authenticateToken } from "../middleware/auth";
+import { verifyToken } from "../middleware/auth";
 
-const router = Router();
+const bookRouter = Router();
 
-// Route untuk membuat buku baru
-router.post("/", authenticateToken, createBook);
+// Endpoint untuk menambahkan buku baru
+bookRouter.post("/", verifyToken, addNewBook);
 
-// Route untuk mendapatkan semua buku
-router.get("/", authenticateToken, getBooks);
+// Endpoint untuk mengambil semua buku
+bookRouter.get("/", verifyToken, fetchAllBooks);
 
-// Route untuk mendapatkan detail buku berdasarkan ID
-router.get("/:id", authenticateToken, getBookById);
+// Endpoint untuk mendapatkan rincian buku berdasarkan ID
+bookRouter.get("/:id", verifyToken, fetchBookById);
 
-// Route untuk memperbarui buku berdasarkan ID
-router.patch("/:id", authenticateToken, updateBook);
+// Endpoint untuk memperbarui informasi buku berdasarkan ID
+bookRouter.patch("/:id", verifyToken, modifyBook);
 
-// Route untuk menghapus buku berdasarkan ID
-router.delete("/:id", authenticateToken, deleteBook);
+// Endpoint untuk menghapus buku berdasarkan ID
+bookRouter.delete("/:id", verifyToken, removeBook);
 
-// Route untuk meminjam buku berdasarkan ID
-router.post("/borrow/:id", authenticateToken, borrowBook);
+// Endpoint untuk meminjam buku berdasarkan ID
+bookRouter.post("/lend/:id", verifyToken, lendBook);
 
-export default router;
+export default bookRouter;
